@@ -4,7 +4,7 @@
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import argparse
-import os
+from functools import partial
 from urllib.parse import urlsplit, urlunsplit
 
 
@@ -52,10 +52,15 @@ def main() -> None:
     output = Path(__file__).resolve().parents[2] / 'out'
     if not (output / 'index.html').is_file():
         parser.error('Missing static export. Run pnpm build first.')
-    os.chdir(output)
-    server = ThreadingHTTPServer(("127.0.0.1", args.port), CanteenHandler)
+    handler = partial(CanteenHandler, directory=str(output))
+    server = ThreadingHTTPServer(("127.0.0.1", args.port), handler)
     print(f"Preview: http://127.0.0.1:{args.port}/canteen/")
-    server.serve_forever()
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.server_close()
 
 
 if __name__ == "__main__":

@@ -56,11 +56,13 @@ scripts/                build checks and ECS deployment helper
 
 ## Data and Editing SOP
 
-The product is intentionally database-free for v0.1. Edit `src/features/canteen/registry.ts` to add or revise canteens, stalls, foods and sources. Keep these rules:
+The product is intentionally database-free for v0.2. Edit `src/features/canteen/registry.ts` to add or revise canteens, stalls, foods and sources. Keep these rules:
 
 - use slugs for stable URLs;
 - mark prices as `参考价` unless there is a dated public menu;
 - include a source URL for factual venue claims;
+- keep verified venue names separate from historical aliases; never invent precise locations;
+- keep food assets local, one image per dish; label AI images as illustrative, not real canteen photos;
 - keep copy welcoming and avoid presenting user-submitted ratings as official facts;
 - run `pnpm lint && pnpm tsc && pnpm build` after edits.
 

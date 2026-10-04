@@ -61,8 +61,8 @@ export function ProfilePanel() {
   }
 
   return (
-    <div className="profile-page page-enter">
-      <header className="profile-header"><div><span className="eyebrow orange-eyebrow"><span className="eyebrow-line" /> YOUR TABLE</span><h1>我的饭桌，<br /><em>由我来记录。</em></h1><p>没有登录，没有复杂设置。<br />只是把属于你的同济味道留在这里。</p></div><div className="profile-stamp">TJ<br /><span>eat well</span></div></header>
+    <div className="profile-page">
+      <header className="profile-header"><h1>我的饭桌</h1><p>记录喜欢的味道，好好照顾自己。</p></header>
 
       <section className="profile-card">
         <div className="profile-card-top">
@@ -78,7 +78,7 @@ export function ProfilePanel() {
             <button className="button button-primary" type="submit">保存这张饭桌 <Icon name="arrow" size={15} /></button>
           </form>
         ) : (
-          <div className="profile-stats"><div><strong>{savedCount}</strong><span>收藏菜品</span></div><div><strong>03</strong><span>常去食堂</span></div><div><strong>∞</strong><span>好好吃饭</span></div></div>
+          <div className="profile-stats"><Link href="/saved/"><strong>{savedCount}</strong><span>收藏菜品 <Icon name="chevron" size={12} /></span></Link><div><strong>{keywords(profile.favorite).length}</strong><span>口味关键词</span></div></div>
         )}
       </section>
 
@@ -99,7 +99,7 @@ export function ProfilePanel() {
           <p className="profile-feedback" role="status">{message}</p>
           <p className="muted-note">这些信息只保存在当前浏览器，不会上传。</p>
         </div>
-        <div className="profile-open"><span className="eyebrow">OPEN SOURCE NOTE</span><h2>这份图鉴，<br />欢迎一起补全。</h2><p>如果你知道一个好窗口、一个新菜单，欢迎在仓库里提交修改。</p><a href="https://github.com/liwenlong070124-spec/hust-tj-canteen" target="_blank" rel="noreferrer" className="text-link">查看项目仓库 <Icon name="external" size={14} /></a></div>
+        <div className="profile-open"><span className="eyebrow">一起维护这份图鉴</span><h2>让好味道被更多人发现</h2><p>新窗口、菜单和现场照片，欢迎在开源仓库里补充。</p><a href="https://github.com/liwenlong070124-spec/hust-tj-canteen" target="_blank" rel="noreferrer" className="text-link">查看项目仓库 <Icon name="external" size={14} /></a></div>
       </section>
 
       <section className="notice-card"><div className="notice-icon"><Icon name="book" size={19} /></div><div><span className="eyebrow">小公告 · 01</span><h3>价格和营业时间，记得以现场为准</h3><p>这是一个由学生视角整理的本地索引。我们会持续补充公开信息，也欢迎你把最新变化告诉我们。</p></div><Link href="/playground/" className="button button-quiet">了解规范 <Icon name="arrow" size={15} /></Link></section>

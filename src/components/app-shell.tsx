@@ -13,7 +13,8 @@ const navItems = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const active = pathname === '/' ? '/' : `/${pathname.split('/')[1]}/`
+  const section = pathname.split('/')[1]
+  const active = section === 'saved' ? '/profile/' : ['canteens', 'foods'].includes(section) || pathname === '/' ? '/' : `/${section}/`
 
   return (
     <div className="app-frame">
@@ -35,7 +36,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {navItems.map((item) => {
             const isActive = active === item.href
             return (
-              <Link className={cn('rail-link', isActive && 'is-active')} href={item.href} key={item.href}>
+              <Link className={cn('rail-link', isActive && 'is-active')} href={item.href} key={item.href} aria-current={isActive ? 'page' : undefined}>
                 <span className="rail-link-icon"><Icon name={item.icon} size={19} /></span>
                 <span><strong>{item.label}</strong><small>{item.hint}</small></span>
                 {isActive && <span className="rail-dot" />}
@@ -48,7 +49,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link className="rail-mini-link" href="/playground/">
             <span className="status-dot" /> 设计 Playground
           </Link>
-          <p>v0.1 · 本地注册表<br />一起把同济的味道记下来</p>
+          <p>v0.2 · 本地注册表<br />一起把同济的味道记下来</p>
         </div>
       </aside>
 
@@ -63,7 +64,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <nav className="mobile-nav" aria-label="移动端主导航">
         {navItems.map((item) => {
           const isActive = active === item.href
-          return <Link className={cn('mobile-nav-link', isActive && 'is-active')} href={item.href} key={item.href}>
+          return <Link className={cn('mobile-nav-link', isActive && 'is-active')} href={item.href} key={item.href} aria-current={isActive ? 'page' : undefined}>
             <Icon name={item.icon} size={20} />
             <span>{item.label}</span>
           </Link>

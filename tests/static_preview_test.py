@@ -67,7 +67,7 @@ class PreviewTests(unittest.TestCase):
         self.assertEqual(body, b'')
 
     def test_pages_and_assets(self):
-        for route in ['', 'eat/', 'profile/', 'playground/', 'canteens/dingxiang-yuan/']:
+        for route in ['', 'eat/', 'profile/', 'playground/', 'saved/', 'canteens/', 'canteens/dingxiang-yuan/', 'canteens/tongde-yuan/', 'canteens/tonghua-yuan/', 'foods/you-po-mian/']:
             with self.subTest(route=route):
                 self.assertEqual(self.request('/canteen/' + route)[0], 200)
         stylesheet = next((ROOT / 'out/_next/static').rglob('*.css'))
@@ -96,6 +96,15 @@ class PreviewTests(unittest.TestCase):
 
     def test_profile_repository_link(self):
         self.assertIn('https://github.com/liwenlong070124-spec/hust-tj-canteen', (ROOT / 'out/profile/index.html').read_text())
+
+    def test_all_food_details_and_images_are_exported(self):
+        routes = list((ROOT / 'out/foods').glob('*/index.html'))
+        self.assertEqual(len(routes), 11)
+        for page in routes:
+            body = page.read_text()
+            self.assertIn('AI', body)
+            self.assertIn('参考价', body)
+            self.assertEqual(self.request('/canteen/images/foods/' + page.parent.name + '.webp')[0], 200)
 
 
 if __name__ == '__main__':

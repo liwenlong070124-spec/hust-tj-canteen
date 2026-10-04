@@ -1,118 +1,53 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { Icon } from '@/components/icons'
 import { cn } from '@/lib/cn'
+import { useSavedFoods } from '@/lib/use-saved-foods'
 import { FoodCard } from './food-card'
 import type { Canteen, FoodItem, FoodTag } from './types'
 
-const filters: Array<{ label: string; value: '全部' | FoodTag }> = [
-  { label: '全部', value: '全部' },
-  { label: '早八友好', value: '早八友好' },
-  { label: '性价比', value: '性价比' },
-  { label: '面饭', value: '面饭' },
-  { label: '辣口', value: '辣口' },
-  { label: '清真', value: '清真' },
-]
+const filters: Array<'全部' | FoodTag> = ['全部', '早八友好', '性价比', '面饭', '辣口', '清淡', '小吃']
 
 export function FoodAtlas({ foods, canteens }: { foods: FoodItem[]; canteens: Canteen[] }) {
   const [query, setQuery] = useState('')
   const [activeFilter, setActiveFilter] = useState<'全部' | FoodTag>('全部')
-  const [saved, setSaved] = useState<string[]>([])
   const [showSearch, setShowSearch] = useState(false)
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      const stored = window.localStorage.getItem('tj-food-saved')
-      if (stored) setSaved(JSON.parse(stored) as string[])
-    }, 0)
-    return () => window.clearTimeout(timer)
-  }, [])
-
-  const toggleSaved = (slug: string) => {
-    setSaved((current) => {
-      const next = current.includes(slug) ? current.filter((item) => item !== slug) : [...current, slug]
-      window.localStorage.setItem('tj-food-saved', JSON.stringify(next))
-      return next
-    })
-  }
-
+  const { saved, toggleSaved, storageError } = useSavedFoods()
+  const verified = canteens.filter((item) => item.status === 'verified')
   const filteredFoods = useMemo(() => {
     const normalized = query.trim().toLowerCase()
-    return foods.filter((food) => {
-      const matchesFilter = activeFilter === '全部' || food.tags.includes(activeFilter)
+    return [...foods].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured))).filter((food) => {
       const canteen = canteens.find((item) => item.slug === food.canteenSlug)
-      const matchesQuery = !normalized || [food.name, food.stall, canteen?.name, ...food.tags].join(' ').toLowerCase().includes(normalized)
-      return matchesFilter && matchesQuery
+      return (activeFilter === '全部' || food.tags.includes(activeFilter)) && (!normalized || [food.name, food.stall, canteen?.name, ...food.tags].join(' ').toLowerCase().includes(normalized))
     })
   }, [activeFilter, canteens, foods, query])
 
-  const featured = foods.filter((food) => food.featured).slice(0, 3)
-  const getCanteenName = (slug: string) => canteens.find((canteen) => canteen.slug === slug)?.name ?? '同济校区'
-
-  return (
-    <div className="atlas-page page-enter">
-      <header className="atlas-hero">
-        <div className="hero-copy">
-          <span className="eyebrow orange-eyebrow"><span className="eyebrow-line" /> 今日食谱 · 10.04</span>
-          <h1>今天，<br /><em>吃点好的。</em></h1>
-          <p>同济医学院校区美食图鉴<br />从下一口开始，认识校园里的烟火气。</p>
-          <div className="hero-actions">
-            <Link className="button button-primary" href="/eat/">帮我决定 <Icon name="arrow" size={16} /></Link>
-            <button className="button button-quiet" onClick={() => setShowSearch((current) => !current)}><Icon name="search" size={16} /> 搜一搜</button>
-          </div>
-        </div>
-        <div className="hero-art" aria-label="一碗热气腾腾的校园饭菜" role="img">
-          <div className="hero-sun" />
-          <div className="hero-doodle doodle-one">✦</div>
-          <div className="hero-doodle doodle-two">· ·</div>
-          <div className="hero-plate">
-            <span className="plate-steam steam-one" /><span className="plate-steam steam-two" />
-            <span className="plate-bowl">🍜</span>
-          </div>
-          <span className="hero-note note-one">warm<br />& tasty</span>
-          <span className="hero-note note-two">同济<br />烟火气</span>
-        </div>
-      </header>
-
-      <div className={cn('search-drawer', showSearch && 'is-open')}>
-        <Icon name="search" size={19} />
-        <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜菜名、窗口、食堂或口味" aria-label="搜索美食" autoFocus={showSearch} />
-        {query && <button onClick={() => setQuery('')} aria-label="清空搜索">清除</button>}
+  return <div className="atlas-page">
+    <header className="atlas-hero">
+      <div className="hero-copy">
+        <span className="eyebrow orange-eyebrow">同济食光 · 校园美食图鉴</span>
+        <h1>今天，<em>吃点好的。</em></h1>
+        <p>一口烟火气，治愈每个普通日子。</p>
+        <div className="hero-actions"><Link className="button button-primary" href="/eat/">帮我决定 <Icon name="shuffle" size={16} /></Link><button className="hero-search-button" aria-label="搜索图鉴" aria-expanded={showSearch} aria-controls="atlas-search" onClick={() => setShowSearch((current) => !current)}><Icon name="search" size={19} /></button></div>
       </div>
-
-      <section className="section-block featured-section">
-        <div className="section-heading">
-          <div><span className="eyebrow">EDITOR’S PICKS</span><h2>今日值得吃</h2></div>
-          <span className="section-note">先收藏，到了饭点不慌张 <Icon name="heart" size={14} /></span>
-        </div>
-        <div className="featured-grid">
-          {featured.map((food) => <FoodCard key={food.slug} food={food} canteenName={getCanteenName(food.canteenSlug)} isSaved={saved.includes(food.slug)} onToggleSaved={toggleSaved} featured />)}
-        </div>
-      </section>
-
-      <section className="section-block atlas-list-section">
-        <div className="section-heading list-heading">
-          <div><span className="eyebrow">THE ATLAS</span><h2>慢慢逛，慢慢选</h2></div>
-          <span className="result-count">{filteredFoods.length} <small>种灵感</small></span>
-        </div>
-        <div className="filter-row" role="tablist" aria-label="美食筛选">
-          {filters.map((filter) => <button className={cn('filter-pill', activeFilter === filter.value && 'is-active')} key={filter.value} onClick={() => setActiveFilter(filter.value)} role="tab" aria-selected={activeFilter === filter.value}>{filter.label}</button>)}
-        </div>
-        {filteredFoods.length > 0 ? <div className="food-grid">
-          {filteredFoods.map((food) => <FoodCard key={food.slug} food={food} canteenName={getCanteenName(food.canteenSlug)} isSaved={saved.includes(food.slug)} onToggleSaved={toggleSaved} />)}
-        </div> : <div className="empty-state"><span>🍚</span><h3>还没有找到这口</h3><p>换个关键词，或者先看看“全部”。</p><button className="button button-secondary" onClick={() => { setQuery(''); setActiveFilter('全部') }}>清除筛选</button></div>}
-      </section>
-
-      <section className="canteen-strip">
-        <div><span className="eyebrow">CANTEEN INDEX</span><h2>先认路，再吃饭。</h2><p>把同济校区的食堂坐标收进一张小小的地图。</p></div>
-        <div className="canteen-mini-list">
-          {canteens.slice(0, 4).map((canteen, index) => <Link href={`/canteens/${canteen.slug}/`} className="canteen-mini" key={canteen.slug}><span className="canteen-index">0{index + 1}</span><span><strong>{canteen.name}</strong><small>{canteen.tags.slice(0, 2).join(' · ')}</small></span><Icon name="chevron" size={16} /></Link>)}
-        </div>
-      </section>
-
-      <footer className="page-footer"><span>同济食光 · 给校园生活加一点好吃的注脚</span><Link href="/playground/">设计规范 <Icon name="arrow" size={13} /></Link></footer>
-    </div>
-  )
+      <div className="hero-art" aria-hidden="true"><div className="hero-sun" /><div className="hero-plate"><span className="plate-steam steam-one" /><span className="plate-steam steam-two" /><span className="plate-bowl">🍜</span></div><span className="hero-doodle doodle-one">✦</span></div>
+    </header>
+    <nav className="atlas-shortcuts" aria-label="图鉴快捷入口">
+      <Link href="/canteens/"><span>🏡</span><strong>食堂图谱</strong><small>{verified.length} 个公开食堂</small></Link>
+      <button onClick={() => { setActiveFilter('早八友好'); setQuery('') }}><span>🥟</span><strong>早餐灵感</strong><small>赶早八也吃好</small></button>
+      <Link href="/eat/"><span>🎲</span><strong>吃什么</strong><small>抽一份小惊喜</small></Link>
+      <Link href="/saved/"><span>🧡</span><strong>我的收藏</strong><small>{saved.length} 道心动菜品</small></Link>
+    </nav>
+    {showSearch && <form id="atlas-search" className="atlas-search" role="search" onSubmit={(event) => event.preventDefault()}><Icon name="search" size={18} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜菜名、窗口、食堂" aria-label="搜索美食" autoFocus /><button type="button" onClick={() => { setQuery(''); setShowSearch(false) }}>收起</button></form>}
+    <section className="atlas-list-section" aria-label="菜品图鉴">
+      <div className="section-heading list-heading"><div><h2>{query ? '找到这几口' : activeFilter === '全部' ? '好吃的，都在这里' : `${activeFilter} · 今天的灵感`}</h2><p className="atlas-caption">编辑推荐 · 图片与价格均为示意参考</p></div><span className="result-count">{filteredFoods.length}<small> 道</small></span></div>
+      <div className="filter-row" aria-label="美食筛选">{filters.map((filter) => <button className={cn('filter-pill', activeFilter === filter && 'is-active')} key={filter} onClick={() => setActiveFilter(filter)} aria-pressed={activeFilter === filter}>{filter}</button>)}</div>
+      {storageError && <p role="status" className="profile-feedback">{storageError}</p>}
+      {filteredFoods.length ? <div className="food-grid">{filteredFoods.map((food) => <FoodCard key={food.slug} food={food} canteenName={canteens.find((item) => item.slug === food.canteenSlug)?.name ?? '位置待核验'} isSaved={saved.includes(food.slug)} onToggleSaved={toggleSaved} />)}</div> : <div className="empty-state"><span>🍚</span><h3>还没有找到这口</h3><p>试试别的菜名，或者回到全部。</p><button className="button button-secondary" onClick={() => { setQuery(''); setActiveFilter('全部') }}>清除筛选</button></div>}
+    </section>
+    <section className="atlas-directory-banner"><div><Icon name="map" size={24} /><div><h2>换一家食堂，换一种心情</h2><p>完整名录、公开来源与待核验线索</p></div></div><Link href="/canteens/" className="button button-secondary">逛逛食堂 <Icon name="arrow" size={15} /></Link></section>
+    <footer className="page-footer"><span>好好吃饭，也是一件重要的小事。</span><Link href="/playground/">设计规范 <Icon name="arrow" size={13} /></Link></footer>
+  </div>
 }
