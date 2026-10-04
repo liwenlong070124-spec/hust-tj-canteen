@@ -1,0 +1,20 @@
+{
+  "name": "hust-tj-canteen",
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "outputDirectory": "out",
+  "nodeVersion": "22.11.0",
+  "redirects": [],
+  "headers": [
+    {
+      "source": "/_next/static/*",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ],
+  "cloudFunctions": {
+    "mainlandRegions": ["ap-guangzhou"],
+    "nodejs": { "maxDuration": 30 }
+  }
+}
