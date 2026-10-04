@@ -7,6 +7,7 @@
 - **双运行模式**：本地开发/验收 + 自有 ECS 的 Node 静态服务部署
 - **前端基础**：Next.js 16.2+ App Router + TypeScript strict + Tailwind CSS v4
 - **部署入口**：`https://lwl.husteread.com/canteen/`
+- **子路径**：`basePath: '/canteen'`，本地静态预览请访问 `/canteen/`
 
 ## Tech Stack
 

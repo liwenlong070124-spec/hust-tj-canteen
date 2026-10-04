@@ -34,6 +34,8 @@ pnpm dev
 
 打开 [http://localhost:3000](http://localhost:3000)。
 
+线上挂载在 `/canteen` 子路径；验收静态产物时，可运行 `python3 scripts/dev/static-preview.py` 后访问 [http://localhost:4173/canteen/](http://localhost:4173/canteen/)。
+
 ## 验收
 
 ```bash
@@ -47,7 +49,7 @@ pnpm check:output
 
 目标地址：`https://lwl.husteread.com/canteen/`
 
-部署脚本会构建静态站并通过 `ssh MyECS` 连接服务器，将 standalone Next 服务与静态资源同步到 `/var/www/hust-tj-canteen`，随后尝试重启 `hust-tj-canteen.service`。首次部署前请按 [ECS 部署说明](./docs/ops/deploy-ecs.md) 在服务器准备 Node.js、pnpm、systemd 和反向代理。
+部署脚本会构建静态站并通过 `ssh MyECS` 连接服务器，将 `out/` 同步到 `/var/www/hust-tj-canteen/out`。首次部署前请按 [ECS 部署说明](./docs/ops/deploy-ecs.md) 在服务器准备 Nginx 和 HTTPS。
 
 ```bash
 bash scripts/deploy/ssh-deploy.sh

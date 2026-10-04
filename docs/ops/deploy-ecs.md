@@ -15,38 +15,15 @@ sudo useradd --system --home /var/www/hust-tj-canteen --shell /usr/sbin/nologin 
 sudo chown -R canteen:canteen /var/www/hust-tj-canteen
 ```
 
-准备 Node.js 22.11.0、pnpm 以及 Nginx/Caddy 反向代理。站点运行端口建议使用 `3107`，由 `lwl.husteread.com/canteen/` 的代理规则转发到 `127.0.0.1:3107`。
+本项目是静态导出，不需要在 ECS 上安装 Node.js 或 pnpm；服务器只需要 Nginx 和 HTTPS。静态文件放在 `/var/www/hust-tj-canteen/out`。
 
-## systemd 服务
+## Nginx 路由
 
-将以下内容保存为 `/etc/systemd/system/hust-tj-canteen.service`：
+将 `/canteen/` 映射到静态导出的目录。因为 Next 配置了 `basePath: '/canteen'`，资源和详情链接会自动带上前缀。
 
-```ini
-[Unit]
-Description=HUST TJMU Canteen Atlas
-After=network.target
+版本化配置见 [`deploy/nginx/lwl.husteread.com.conf`](../../deploy/nginx/lwl.husteread.com.conf)。
 
-[Service]
-Type=simple
-User=canteen
-WorkingDirectory=/var/www/hust-tj-canteen
-Environment=NODE_ENV=production
-Environment=PORT=3107
-ExecStart=/usr/bin/pnpm start
-Restart=always
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-```
-
-然后执行：
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable hust-tj-canteen.service
-sudo systemctl start hust-tj-canteen.service
-```
+用 Certbot/宝塔面板给 `lwl.husteread.com` 申请证书后，将同样的两个 `location` 放入 443 server，并把 80 server 改为 301 跳转 HTTPS。
 
 ## 本地发布
 
@@ -56,11 +33,10 @@ sudo systemctl start hust-tj-canteen.service
 bash scripts/deploy/ssh-deploy.sh
 ```
 
-脚本会依次运行安装、lint、typecheck、build 和产物检查，再通过 `ssh MyECS`/`rsync` 同步 `.next/`、`public/` 和配置，最后重启 systemd 服务。
+脚本会依次运行安装、lint、typecheck、build 和产物检查，再通过 `ssh MyECS`/`rsync` 将 `out/` 同步到 ECS。Nginx 读取该目录，不需要服务重启。
 
 ## 反向代理注意事项
 
-主站已经占用根路径时，代理需要把 `/canteen/` 的请求转发到站点端口，并保留前缀。Next 静态资源路径默认是 `/_next/...`，如果代理使用子路径，建议在 Nginx/Caddy 中同时把 `/canteen/_next/` 映射到应用的 `/_next/`，或者后续设置 `basePath: '/canteen'` 并重新构建。
+主站已经占用根路径时，代理需要保留根路径原个人站点，再单独挂载 `/canteen/`。不要把 `out/` 直接覆盖个人站点根目录。
 
 当前 v0.1 使用 `trailingSlash: true`，详情路由可直接映射到 `/canteen/canteens/<slug>/index.html`。
-
