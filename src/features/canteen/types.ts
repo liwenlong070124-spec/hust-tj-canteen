@@ -23,6 +23,7 @@ export type FoodItem = {
   tags: FoodTag[]
   category: MenuCategory
   image: string
+  imageNote?: string
   accent: string
   featured?: boolean
   sourceUrl?: string
@@ -49,4 +50,6 @@ export type Canteen = {
   mapUrl: string
   sourceUrls: string[]
   stalls: Stall[]
+  status: 'verified' | 'historical'
+  sourceNote: string
 }
