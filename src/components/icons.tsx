@@ -13,6 +13,7 @@ type IconName =
   | 'external'
   | 'plus'
   | 'check'
+  | 'close'
 
 type IconProps = {
   name: IconName
@@ -38,5 +39,6 @@ export function Icon({ name, size = 18, strokeWidth = 1.8 }: IconProps) {
     case 'external': return <svg {...common}><path d="M14 4h6v6M20 4l-9 9" /><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5" /></svg>
     case 'plus': return <svg {...common}><path d="M12 5v14M5 12h14" /></svg>
     case 'check': return <svg {...common}><path d="m5 12 4 4L19 6" /></svg>
+    case 'close': return <svg {...common}><path d="m6 6 12 12M6 18 18 6" /></svg>
   }
 }

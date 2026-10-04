@@ -23,7 +23,9 @@ sudo chown -R canteen:canteen /var/www/hust-tj-canteen
 
 版本化配置见 [`deploy/nginx/lwl.husteread.com.conf`](../../deploy/nginx/lwl.husteread.com.conf)。
 
-用 Certbot/宝塔面板给 `lwl.husteread.com` 申请证书后，将同样的两个 `location` 放入 443 server，并把 80 server 改为 301 跳转 HTTPS。
+用 Certbot/宝塔面板给 `lwl.husteread.com` 申请证书后，使用版本化配置中的全部 `/canteen` location，并把 80 server 改为 301 跳转 HTTPS。裸路径 `/canteen` 必须跳转到 `/canteen/`；不存在的路由应返回 HTTP 404 并展示 `out/404.html`，不能回退到首页。
+
+修改 Nginx 配置时，先备份当前站点配置，再应用改动；运行 `sudo nginx -t` 成功后才执行 `sudo systemctl reload nginx`。配置检查失败时恢复备份。日常发布脚本只同步静态文件，不覆盖 Nginx 或根目录个人网站。
 
 ## 本地发布
 
@@ -33,7 +35,7 @@ sudo chown -R canteen:canteen /var/www/hust-tj-canteen
 bash scripts/deploy/ssh-deploy.sh
 ```
 
-脚本会依次运行安装、lint、typecheck、build 和产物检查，再通过 `ssh MyECS`/`rsync` 将 `out/` 同步到 ECS。Nginx 读取该目录，不需要服务重启。
+脚本会依次运行安装、lint、typecheck、build、产物检查和回归测试，再通过 `ssh MyECS`/`rsync` 将 `out/` 同步到 ECS。测试需要本地 Python 3.9+。Nginx 读取该目录，不需要服务重启。
 
 ## 反向代理注意事项
 

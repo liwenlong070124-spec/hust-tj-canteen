@@ -23,7 +23,7 @@ export function FoodCard({ food, canteenName, isSaved, onToggleSaved, featured =
           <span className="food-card-emoji" aria-hidden="true">{food.category === '早餐' ? '🥣' : food.category === '小吃' ? '🍢' : food.category === '清真' ? '🍜' : '🍱'}</span>
           <span className="food-card-view"><Icon name="arrow" size={15} /></span>
         </Link>
-        <button className={cn('save-button', isSaved && 'is-saved')} onClick={() => onToggleSaved(food.slug)} aria-label={isSaved ? `取消收藏${food.name}` : `收藏${food.name}`}>
+        <button className={cn('save-button', isSaved && 'is-saved')} onClick={() => onToggleSaved(food.slug)} aria-label={isSaved ? `取消收藏${food.name}` : `收藏${food.name}`} aria-pressed={isSaved}>
           <Icon name="heart" size={17} strokeWidth={isSaved ? 2.5 : 1.8} />
         </button>
       </div>

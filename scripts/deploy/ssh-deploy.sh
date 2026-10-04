@@ -11,6 +11,7 @@ pnpm lint
 pnpm tsc
 pnpm build
 pnpm check:output
+pnpm test
 
 ssh "$DEPLOY_HOST" "mkdir -p '$DEPLOY_PATH/out'"
 rsync -az --delete out/ "$DEPLOY_HOST:$DEPLOY_PATH/out/"

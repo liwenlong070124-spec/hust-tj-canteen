@@ -4,7 +4,7 @@
 
 “同济食光”是华中科技大学同济医学院校区的本地美食图鉴：用可维护的本地注册表记录食堂、窗口、参考价格、营业时段与位置提示，并提供推荐浏览、随机“吃什么”、个人偏好三条主线。
 
-- **双运行模式**：本地开发/验收 + 自有 ECS 的 Node 静态服务部署
+- **双运行模式**：本地开发/验收 + 自有 ECS 的 Nginx 静态部署
 - **前端基础**：Next.js 16.2+ App Router + TypeScript strict + Tailwind CSS v4
 - **部署入口**：`https://lwl.husteread.com/canteen/`
 - **子路径**：`basePath: '/canteen'`，本地静态预览请访问 `/canteen/`
@@ -16,8 +16,8 @@
 - **Language**: TypeScript (strict mode)
 - **Package Manager**: pnpm
 - **Styling**: Tailwind CSS v4 + hand-authored design tokens
-- **Runtime**: Node.js 22.11.0 on production server; local Node 20+ is acceptable for development
-- **Deployment**: `ssh MyECS` + rsync to a systemd-managed standalone Next server
+- **Runtime**: local Node 20.9+ for builds; Python 3.9+ for preview/tests; production only needs Nginx
+- **Deployment**: `ssh MyECS` + rsync of `out/` to Nginx
 
 ## Key Commands
 
@@ -27,6 +27,8 @@
 - Lint: `pnpm lint`
 - Build: `pnpm build`
 - Output checks: `pnpm check:output`
+- Regression tests: `pnpm test` (after build)
+- Static preview: `pnpm preview`
 - Deploy: `bash scripts/deploy/ssh-deploy.sh`
 
 ## Definition of Done

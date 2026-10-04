@@ -26,6 +26,7 @@ logs/
 
 # Test output
 coverage/
+__pycache__/
 
 # Local runtime data
 .local/

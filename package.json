@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "python3 scripts/dev/static-preview.py",
+    "preview": "python3 scripts/dev/static-preview.py",
+    "test": "node --test tests/profile.test.mjs && python3 -B -m unittest discover -s tests -p '*_test.py'",
     "lint": "eslint .",
     "tsc": "tsc --noEmit",
     "check:output": "bash scripts/build/check-output.sh"

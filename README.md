@@ -32,9 +32,9 @@ pnpm install
 pnpm dev
 ```
 
-打开 [http://localhost:3000](http://localhost:3000)。
+打开 [http://localhost:3000/canteen/](http://localhost:3000/canteen/)。
 
-线上挂载在 `/canteen` 子路径；验收静态产物时，可运行 `python3 scripts/dev/static-preview.py` 后访问 [http://localhost:4173/canteen/](http://localhost:4173/canteen/)。
+线上挂载在 `/canteen` 子路径；先运行 `pnpm build`，再运行 `pnpm preview`（需要 Python 3.9+），访问 [http://localhost:4173/canteen/](http://localhost:4173/canteen/)。`pnpm start` 同样用于静态预览，不启动 Next 服务端。
 
 ## 验收
 
@@ -43,6 +43,7 @@ pnpm lint
 pnpm tsc
 pnpm build
 pnpm check:output
+pnpm test
 ```
 
 ## 部署

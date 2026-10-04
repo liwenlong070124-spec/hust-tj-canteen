@@ -112,6 +112,19 @@ h1, h2 { font-family: Georgia, "Songti SC", serif; letter-spacing: -.06em; }
 @keyframes spin { to { transform: rotate(360deg); } } @keyframes pulse-dot { 0%,100% { box-shadow: 0 0 0 0 rgba(237,127,73,.35); } 50% { box-shadow: 0 0 0 7px rgba(237,127,73,0); } } @keyframes nudge { 0%,100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
 
 .food-card-click-area { position: absolute; inset: 0; display: block; }
+.food-card-visual::before, .food-card-visual::after { pointer-events: none; }
+.food-card-click-area:focus-visible { outline: 3px solid var(--orange-dark); outline-offset: -4px; border-radius: var(--radius-md); }
+.save-button:focus-visible { outline: 3px solid var(--orange-dark); outline-offset: 3px; }
+.food-price-wrap { flex-shrink: 0; }
+.profile-id { min-width: 0; overflow-wrap: anywhere; }
+.profile-avatar, .profile-card-top .icon-button { flex-shrink: 0; }
+.keyword-form { display: grid; gap: 8px; margin-top: 18px; }
+.keyword-form label { color: var(--muted); font-size: 12px; }
+.keyword-form input { width: 100%; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; color: var(--ink); background: var(--paper); }
+.keyword-form input:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.keyword-form > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.profile-feedback { margin: 14px 0 0; color: var(--orange-dark); font-size: 12px; }
+.profile-feedback:empty { display: none; }
 .food-price-wrap { display: flex; align-items: flex-end; flex-direction: column; gap: 1px; }
 .food-price-note { color: var(--muted); font-size: 9px; white-space: nowrap; }
 .draw-result-meta small { margin-right: 2px; color: var(--muted); font-size: 9px; }
